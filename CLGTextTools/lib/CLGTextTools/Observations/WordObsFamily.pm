@@ -162,26 +162,26 @@ sub addText {
     my %vocabTokens;
 
     foreach my $obsType (keys %{$self->{observs}}) {
-	my $p = $self->{params}->{$obsType}->{pattern};
-	my $lc =  $self->{params}->{$obsType}->{lc};
-	my $selectedTokens = $tokensCase[$lc];
-	my $vocabId = $self->{params}->{$obsType}->{vocabId};
-	if (defined($vocabId)) {
-	    $self->{logger}->debug("looking for vocab '$vocabId' (addText, type $obsType)") if ($self->{logger});
-	    my $vocab = $self->getVocab($vocabId, $obsType);
-	    my @tokensVocab = map { defined($vocab->{$_}) ? $_ : $unknownToken } @$selectedTokens;
-	    $selectedTokens = \@tokensVocab;
-	}
-	$self->addStartEndNGrams($selectedTokens, $obsType) if ($self->{params}->{$obsType}->{sl});
-	for (my $i=0; $i<$nbTokens; $i++) {
-	    if ($i + scalar(@$p) <= $nbTokens) {
-			my @ngram;
-			for (my $j=0; $j<scalar(@$p); $j++) {
-				push(@ngram, $selectedTokens->[$i+$j]) if ($p->[$j]);
+		my $p = $self->{params}->{$obsType}->{pattern};
+		my $lc =  $self->{params}->{$obsType}->{lc};
+		my $selectedTokens = $tokensCase[$lc];
+		my $vocabId = $self->{params}->{$obsType}->{vocabId};
+		if (defined($vocabId)) {
+			$self->{logger}->debug("looking for vocab '$vocabId' (addText, type $obsType)") if ($self->{logger});
+			my $vocab = $self->getVocab($vocabId, $obsType);
+			my @tokensVocab = map { defined($vocab->{$_}) ? $_ : $unknownToken } @$selectedTokens;
+			$selectedTokens = \@tokensVocab;
+		}
+		$self->addStartEndNGrams($selectedTokens, $obsType) if ($self->{params}->{$obsType}->{sl});
+		for (my $i=0; $i<$nbTokens; $i++) {
+			if ($i + scalar(@$p) <= $nbTokens) {
+				my @ngram;
+				for (my $j=0; $j<scalar(@$p); $j++) {
+					push(@ngram, $selectedTokens->[$i+$j]) if ($p->[$j]);
+				}
+				$self->_addNGram(\@ngram, $obsType);
 			}
-			$self->_addNGram(\@ngram, $obsType);
-	    }
-	}
+		}
     }
 }
 

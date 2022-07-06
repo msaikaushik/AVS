@@ -59,7 +59,7 @@ sub getObservations {
     #TODO: check filename
 
     # TODO: dont sent arguments, take from $self object.
-    return $self->_generateContextVectors();    
+    return $self->{contextVectors};    
 }
 
 # generate and save context vectors in object
@@ -67,7 +67,9 @@ sub addText {
     my $self = shift;
     my $text = shift;
 
-    my %contextVectorHash = $self->_generateContextVectors(\$text);    
+    my %contextVectorHash = $self->_generateContextVectors(\$text);
+    
+    $self->{contextVectors} = \%contextVectorHash;
 }
 
 sub _generateContextVectors {
@@ -102,6 +104,7 @@ sub _generateContextVectors {
 
 # INTERNAL FUNCTIONS
 
+# TODO: check data processing here
 sub getTextArrayFromString {
     my $textContent = shift;
     $textContent =~ s/([^\w\s]+)/ $1 /g;
@@ -145,7 +148,6 @@ sub getTextArrayFromString {
 #     return @text;
 # }
 
-# TODO: check words and the hashes, even punctuations are coming and also in number of tokens remove just punctuations.
 sub getHashOfFrequencyRanking {
     my @text = @{$_[0]};
     my %hashFrequency;
@@ -153,6 +155,7 @@ sub getHashOfFrequencyRanking {
     foreach my $line (@text) {
         my @words = split(' ', $line);
         foreach my $word (@words) {
+            $word =~ s/[[:punct:]]//g;;
             $hashFrequency{$word}++;
         }
     }
@@ -169,7 +172,7 @@ sub getHashOfFrequencyRanking {
         $i++;
     }
 
-    print Dumper \%hashTokenRanking;
+    # print Dumper \%hashTokenRanking;
 
     return (\%hashTokenRanking, \%hashRankingToken);
 }
@@ -183,6 +186,7 @@ sub createIndexOfTokens {
     for my $row (@text) {
         my @wordsInSentence = split(' ', $row);
         foreach my $word (@wordsInSentence) {
+            $word =~ s/[[:punct:]]//g;
             $word = lc($word);
             if (!exists($indexes{$word})) {
                 $indexes{$word} = $index;
@@ -354,13 +358,6 @@ sub createAfterArray {
 
     return %contextVectorHash;
 }
-
-# flattens a 2D array into a 1D array.
-# dont use
-# sub flat(@) {
-#     return map { ref eq 'ARRAY' ? flat(@$_) : $_ } @_;
-# }
-
 
 sub calculateSimilarity {
     my @cv1 = @{$_[0]};

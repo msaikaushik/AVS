@@ -381,10 +381,9 @@ sub filterMinFreq {
     
     foreach my $familyId (keys %{$self->{families}}) {
 
-		print($familyId);
-
 		$self->{logger}->debug("filter min freq for family '$familyId'") if ($self->{logger});
 		foreach my $familyType (keys %{$self->{typesByFamily}->{$familyId}}) {
+
 			$self->{logger}->debug("filter min freq for family '$familyId', family type = '$familyType'") if ($self->{logger});
 			my $observs1 = $self->{families}->{$familyId}->getObservations($familyType);
 			foreach my $obsType (keys %{$self->{typesByFamily}->{$familyId}->{$familyType}}) {
