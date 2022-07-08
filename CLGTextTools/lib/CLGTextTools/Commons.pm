@@ -353,9 +353,6 @@ sub readObsTypesFromConfigHash {
 			}
 		}
     }
-
-	# print("in commons line 357: " , @obsTypesList);
-
     return \@obsTypesList;
 }
 

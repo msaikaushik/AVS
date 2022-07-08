@@ -169,8 +169,6 @@ sub addObsType {
     my ($familyId, $params, $minFreq) = ($obsType =~ m/^([^.]+)\.(.*)\.mf(\d+)$/);
     $self->{logger}->debug("Adding obs type '$obsType'; familyId = '$familyId', minFreq='$minFreq', params='$params'") if ($self->{logger});
 
-	print("defined") if (defined($self->{families}->{$familyId}));
-
     if (!defined($self->{families}->{$familyId})) {
 
 
@@ -309,10 +307,10 @@ sub getNbDistinctNGrams {
     my $obsType = shift;
     
     if (defined($self->{nbNGramsTotal})) { # special case for pre-populated obs collection
-	return scalar(keys %{$self->{finalizedData}->{$obsType}});
+		return scalar(keys %{$self->{finalizedData}->{$obsType}});
     } else {
-	my $familyIdAndType = $self->{mapObsTypeToFamily}->{$obsType};
-	return $self->{families}->{$familyIdAndType->[0]}->getNbDistinctNGrams($familyIdAndType->[1]);
+		my $familyIdAndType = $self->{mapObsTypeToFamily}->{$obsType};
+		return $self->{families}->{$familyIdAndType->[0]}->getNbDistinctNGrams($familyIdAndType->[1]);
     }
 }
 
@@ -328,10 +326,10 @@ sub getNbTotalNGrams {
     my $obsType = shift;
 
     if (defined($self->{nbNGramsTotal})) { # special case for pre-populated obs collection
-	return $self->{nbNGramsTotal}->{$obsType};
+		return $self->{nbNGramsTotal}->{$obsType};
     } else {
-	my $familyIdAndType = $self->{mapObsTypeToFamily}->{$obsType};
-	return $self->{families}->{$familyIdAndType->[0]}->getNbTotalNGrams($familyIdAndType->[1]);
+		my $familyIdAndType = $self->{mapObsTypeToFamily}->{$obsType};
+		return $self->{families}->{$familyIdAndType->[0]}->getNbTotalNGrams($familyIdAndType->[1]);
     }
 }
 

@@ -76,11 +76,11 @@ sub normalizeCompute {
 
     my ($normalizedDoc1, $normalizedDoc2);
     if (defined($size2)) {
-	$normalizedDoc1 = normalizeFreqDoc($doc1, $obsTypeOrsize1, $self->{logger});
-	$normalizedDoc2 = normalizeFreqDoc($doc2, $size2, $self->{logger});
+        $normalizedDoc1 = normalizeFreqDoc($doc1, $obsTypeOrsize1, $self->{logger});
+        $normalizedDoc2 = normalizeFreqDoc($doc2, $size2, $self->{logger});
     } else { # DocProvider objects and obs type
-	$normalizedDoc1 = normalizeFreqDoc($doc1->getObservations($obsTypeOrsize1), $doc1->getNbObsTotal($obsTypeOrsize1), $self->{logger});
-	$normalizedDoc2 = normalizeFreqDoc($doc2->getObservations($obsTypeOrsize1), $doc2->getNbObsTotal($obsTypeOrsize1), $self->{logger});
+        $normalizedDoc1 = normalizeFreqDoc($doc1->getObservations($obsTypeOrsize1), $doc1->getNbObsTotal($obsTypeOrsize1), $self->{logger});
+        $normalizedDoc2 = normalizeFreqDoc($doc2->getObservations($obsTypeOrsize1), $doc2->getNbObsTotal($obsTypeOrsize1), $self->{logger});
     }
     $self->compute($normalizedDoc1, $normalizedDoc2);
 }

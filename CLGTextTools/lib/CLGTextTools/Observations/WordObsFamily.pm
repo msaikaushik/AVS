@@ -29,7 +29,9 @@ use Log::Log4perl;
 use CLGTextTools::Logging qw/confessLog cluckLog/;
 use CLGTextTools::Commons qw/readTextFileLines arrayToHash assignDefaultAndWarnIfUndef/;
 use CLGTextTools::Observations::ObsFamily;
-use Data::Dumper::Simple;
+# use Data::Dumper::Simple;
+use Data::Dumper qw(Dumper);
+
 
 our @ISA=qw/CLGTextTools::Observations::ObsFamily/;
 
@@ -97,6 +99,9 @@ sub addObsType {
 	for (my $i=0; $i<length($patternStr); $i++) {
 	    $pattern[$i] = (substr($patternStr, $i,1) eq "T");
 	}
+
+	print Dumper \@pattern;
+
 	$self->{params}->{$obsType}->{pattern} = \@pattern;
 	$self->{nbDistinctNGrams}->{$obsType} = 0;
 	$self->{nbTotalNGrams}->{$obsType} = 0;
@@ -154,6 +159,7 @@ sub addText {
 #    $self->{logger}->trace("TEXT='$text'") if ($self->{logger});
     my @tokens = split(/\s+/, $text);
     my $nbTokens = scalar(@tokens);
+
     $self->{logger}->debug("Adding text: $nbTokens tokens.") if ($self->{logger});
 #    $self->{logger}->trace(join("||", @tokens)) if ($self->{logger});
     my @lcTokens;

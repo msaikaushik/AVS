@@ -7,6 +7,7 @@ use CLGTextTools::Observations::ObsFamily;
 use Data::Dumper qw(Dumper);
 use CLGTextTools::Logging qw/confessLog cluckLog/;
 
+our $gramSeparator = " ";
 
 our @ISA=qw/CLGTextTools::Observations::ObsFamily/;
 
@@ -41,15 +42,21 @@ sub addObsType {
         $self->{sw} = $self->{sw} || $self->{params}->{$obsType}->{sw};
         $self->{n} = $self->{n} || $self->{params}->{$obsType}->{n};
 
+        print($self->{n});
+
         # $self->{params}->{$obsType}->{lc} = 1;
         # $self->{params}->{$obsType}->{sl} = 0;
 
-        # set pattern
-        my @pattern; #was $pattern;
-        for (my $i = 0; $i < length($patternStr); $i++) {
-            $pattern[$i] = (substr($patternStr, $i, 1) eq "T")
+        # set pattern for calculating ngrams
+        my @pattern;
+        for (my $i = 0; $i < $self->{n}; $i++) {
+            push(@pattern, 1);
         }
+
         $self->{params}->{$obsType}->{pattern} = \@pattern;
+        $self->{nbDistinctNGrams}->{$obsType} = 0;
+        $self->{nbTotalNGrams}->{$obsType} = 0;
+        $self->{obsType} = $obsType;
     }
 }
 
@@ -68,8 +75,44 @@ sub addText {
     my $text = shift;
 
     my %contextVectorHash = $self->_generateContextVectors(\$text);
+
+    my @tokens = split(/\s+/, $text);
+    my $nbTokens = scalar(@tokens);
+    my $obsType = $self->{obsType};
+
+    my @lcTokens;
+    my $lc = 1;
+    @lcTokens = map {lc} (@tokens) if ($self->{lc});
+    my @tokensCase = (\@tokens, \@lcTokens); # tokensCase[1] not initialized if lc not needed
+    my $selectedTokens = $tokensCase[$lc];
+
+    # # TODO: define selectedTokens
+    my $p = $self->{params}->{$obsType}->{pattern};
+    for (my $i=0; $i<$nbTokens; $i++) {
+        if ($i + scalar(@$p) <= $nbTokens) {
+            my @ngram;
+            for (my $j=0; $j<scalar(@$p); $j++) {
+                push(@ngram, $selectedTokens->[$i+$j]) if ($p->[$j]);
+            }
+            $self->_addNGram(\@ngram, $obsType);
+        }
+    }
     
     $self->{contextVectors} = \%contextVectorHash;
+}
+
+sub _addNGram {
+    my $self = shift;
+    my $ngramArray = shift;
+    my $obsType = shift;
+
+    my $ngramStr = join($gramSeparator, @$ngramArray);
+    
+    confessLog($self->{logger}, "Bug: empty ngram!") if (length($ngramStr)==0);
+    $self->{logger}->trace("Adding ngram '$ngramStr' for obsType '$obsType'") if ($self->{logger});
+    $self->{nbDistinctNGrams}->{$obsType}++ if (!defined($self->{observs}->{$obsType}->{$ngramStr}));
+    $self->{observs}->{$obsType}->{$ngramStr}++;
+    $self->{nbTotalNGrams}->{$obsType}++;
 }
 
 sub _generateContextVectors {

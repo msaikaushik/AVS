@@ -655,7 +655,7 @@ sub normalizeFreqDoc {
     my %res;
     my ($obs, $nb);
     while (($obs, $nb) = each %$doc) {
-	$res{$obs} = $nb / $total;
+	    $res{$obs} = $nb / $total;
     }
     return \%res;
 

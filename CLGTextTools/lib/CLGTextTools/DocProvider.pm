@@ -69,14 +69,14 @@ sub new {
 	if ($self->{obsCollection}->isFinalized()) {
 	    $self->{observs} = $self->{obsCollection}->getObservations($self->{obsTypesList});
 	    foreach my $obsType (@{$self->{obsTypesList}}) {
-		$self->{nbObsDistinct}->{$obsType} = $self->{obsCollection}->getNbDistinctNGrams($obsType);
-		$self->{nbObsTotal}->{$obsType} = $self->{obsCollection}->getNbTotalNGrams($obsType);
-		confessLog($self->{logger}, "Error: nb distinct obs not defined for finalized obs coll") if (!defined($self->{nbObsDistinct}->{$obsType}));
-		confessLog($self->{logger}, "Error: nb total obs not defined for finalized obs coll") if (!defined($self->{nbObsTotal}->{$obsType}));
+			$self->{nbObsDistinct}->{$obsType} = $self->{obsCollection}->getNbDistinctNGrams($obsType);
+			$self->{nbObsTotal}->{$obsType} = $self->{obsCollection}->getNbTotalNGrams($obsType);
+			confessLog($self->{logger}, "Error: nb distinct obs not defined for finalized obs coll") if (!defined($self->{nbObsDistinct}->{$obsType}));
+			confessLog($self->{logger}, "Error: nb total obs not defined for finalized obs coll") if (!defined($self->{nbObsTotal}->{$obsType}));
 	    }
 	} else {
 	    if ($self->{checkIfSourceDocExists}) {
-		confessLog($self->{logger}, "Error: file '".$self->{filename}."' not found.") if (! -f $self->{filename}); # only in case doc not finalized (otherwise no need for the source doc, which might not exist)
+			confessLog($self->{logger}, "Error: file '".$self->{filename}."' not found.") if (! -f $self->{filename}); # only in case doc not finalized (otherwise no need for the source doc, which might not exist)
 	    }
 	    $self->{observs} = undef;
 	    $self->{nbObsDistinct} = {};
@@ -133,7 +133,7 @@ sub allCountFilesExist {
     my $self = shift;
 
     foreach my $obsType (@{$self->{obsTypesList}}) {
-	return 0 if (! -f $self->getCountFileName($obsType));
+		return 0 if (! -f $self->getCountFileName($obsType));
     }
     return 1;
 }
@@ -198,12 +198,12 @@ sub getObservations {
 
     $self->{logger}->debug("obtaining observation for '".$self->{filename}."', obsType = ".(defined($obsType)?$obsType:"undef (all)")) if ($self->{logger});
     if (defined($obsType)) {
-	$self->populate($obsType) if (!defined($self->{observs}->{$obsType}));
-	confessLog($self->{logger}, "Error: invalid observation type '$obsType'; no such type found in the collection.") if (!defined($self->{observs}->{$obsType}));
-	return $self->{observs}->{$obsType};
+		$self->populate($obsType) if (!defined($self->{observs}->{$obsType}));
+		confessLog($self->{logger}, "Error: invalid observation type '$obsType'; no such type found in the collection.") if (!defined($self->{observs}->{$obsType}));
+		return $self->{observs}->{$obsType};
     } else {
-	$self->populate() if (!defined($self->{observs}));
-	return $self->{observs} ;
+		$self->populate() if (!defined($self->{observs}));
+		return $self->{observs} ;
     }
 }
 
@@ -350,10 +350,9 @@ sub readSourceDoc {
     $self->{obsCollection}->finalize();
     $self->{observs} = $self->{obsCollection}->getObservations($self->{obsTypesList});
     foreach my $obsType (@{$self->{obsTypesList}}) {
-	$self->{nbObsDistinct}->{$obsType} = $self->{obsCollection}->getNbDistinctNGrams($obsType);
-	$self->{nbObsTotal}->{$obsType} = $self->{obsCollection}->getNbTotalNGrams($obsType);
-	$self->{logger}->debug("".$self->{nbObsTotal}->{$obsType}." observations for '$obsType'") if ($self->{logger});
-
+		$self->{nbObsDistinct}->{$obsType} = $self->{obsCollection}->getNbDistinctNGrams($obsType);
+		$self->{nbObsTotal}->{$obsType} = $self->{obsCollection}->getNbTotalNGrams($obsType);
+		$self->{logger}->debug("".$self->{nbObsTotal}->{$obsType}." observations for '$obsType'") if ($self->{logger});
     }
 }
 
