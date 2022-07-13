@@ -42,8 +42,6 @@ sub addObsType {
         $self->{sw} = $self->{sw} || $self->{params}->{$obsType}->{sw};
         $self->{n} = $self->{n} || $self->{params}->{$obsType}->{n};
 
-        print($self->{n});
-
         # $self->{params}->{$obsType}->{lc} = 1;
         # $self->{params}->{$obsType}->{sl} = 0;
 
@@ -63,7 +61,8 @@ sub addObsType {
 # TODO: call generate context vectors and return a hash with token: cvector as its structure.
 sub getObservations {
     my $self = shift;
-    #TODO: check filename
+
+    # print Dumper \$self->{contextVectors};
 
     # TODO: dont sent arguments, take from $self object.
     return $self->{contextVectors};    
@@ -354,7 +353,8 @@ sub createAfterArray {
     for (my $token = 0; $token < $numberOfTokens; $token++) {
         my @cv = ();
         my $index = 0;
-        
+        my $tokenValue = $hashRankingToken{$token + 1}; # index starting from 1
+
         for (my $j = $n; $j >= 1; $j--) { # for each position is an array.
             if (defined(\@{$before[$token][$j]})) {
                 $cv[$token][$index] = $before[$token][$j];
@@ -395,7 +395,8 @@ sub createAfterArray {
         }
 
         # print Dumper \@cvForToken;
-        $contextVectorHash{$token} = \@cvForToken; 
+
+        $contextVectorHash{$tokenValue} = \@cvForToken; # was token
         @cv = ();
     }
 

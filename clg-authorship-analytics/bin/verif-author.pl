@@ -17,6 +17,8 @@ use CLGTextTools::DocProvider;
 use CLGTextTools::Commons qw/readConfigFile parseParamsFromString readObsTypesFromConfigHash/;
 use CLGAuthorshipAnalytics::Verification::VerifStrategy qw/newVerifStrategyFromId/;
 
+use Data::Dumper qw(Dumper);
+
 
 my $progNamePrefix = "verif-author"; 
 my $progname = "$progNamePrefix.pl";
@@ -187,42 +189,46 @@ foreach my $pair (@docsPairs) { # for each case to analyze
     my @casePair;
     my $probeNo=0;
     foreach my $docSet (@$pair) {
-	$logger->debug("Initializing doc ".($probeNo+1)." / 2") if ($logger);
-	my @docProvSet;
-	$probeDocsCollection[$probeNo] = CLGTextTools::DocCollection->new({logging => $config->{logging} }); # cannot use globalPath since we don't know if the files are part of the same dataset (e.g. same directory)
-	foreach my $doc (@$docSet) { # for each doc in a set
-	    $logger->debug("Initializing doc '$doc'") if ($logger);
-	    my $docProvider;
-	    if ((!$dontLoadAllFiles) && defined($allDocs{$doc})) {
-		$docProvider = $allDocs{$doc};
-	    } else {
-		my %thisConfig = %$config;
-		$thisConfig{filename} = $doc;
-		$thisConfig{useCountFiles} = $useCountFiles;
-		$docProvider = CLGTextTools::DocProvider->new(\%thisConfig);
-		$allDocs{$doc} = $docProvider if (!$dontLoadAllFiles);
-	    }
-	    push(@docProvSet, $docProvider);
-	    $probeDocsCollection[$probeNo]->addDocProvider($docProvider);
-	}
-	push(@casePair, \@docProvSet);
-	$probeNo++;
+		$logger->debug("Initializing doc ".($probeNo+1)." / 2") if ($logger);
+		my @docProvSet;
+		$probeDocsCollection[$probeNo] = CLGTextTools::DocCollection->new({logging => $config->{logging} }); # cannot use globalPath since we don't know if the files are part of the same dataset (e.g. same directory)
+		foreach my $doc (@$docSet) { # for each doc in a set
+			$logger->debug("Initializing doc '$doc'") if ($logger);
+			my $docProvider;
+			if ((!$dontLoadAllFiles) && defined($allDocs{$doc})) {
+				$docProvider = $allDocs{$doc};
+			} else {
+				my %thisConfig = %$config;
+				$thisConfig{filename} = $doc;
+				$thisConfig{useCountFiles} = $useCountFiles;
+				$docProvider = CLGTextTools::DocProvider->new(\%thisConfig);
+				$allDocs{$doc} = $docProvider if (!$dontLoadAllFiles);
+			}
+			push(@docProvSet, $docProvider);
+			$probeDocsCollection[$probeNo]->addDocProvider($docProvider);
+		}
+		push(@casePair, \@docProvSet);
+		$probeNo++;
     }
 
     confess "bug! casePair must be of size 2!" if (scalar(@casePair) != 2);
 
     if ($minDocFreq> 0) {
-	foreach my $collection (@probeDocsCollection) {
-	    $collection->applyMinDocFreq($minDocFreq);
-	}
+		foreach my $collection (@probeDocsCollection) {
+			$collection->applyMinDocFreq($minDocFreq);
+		}
     }
 
     # process case
     $logger->debug("Computing similarity for case") if ($logger);
     if (defined($printScoreDir)) {
-	$targetFileScoresTable = "$printScoreDir/".sprintf("%03d", $caseNo).".scores";
-	$caseNo++;
+		$targetFileScoresTable = "$printScoreDir/".sprintf("%03d", $caseNo).".scores";
+		$caseNo++;
     }
+
+	# my ($doc1, $doc2) = \@casePair;
+	# print Dumper \$doc1;
+
     my $features = $strategy->compute(\@casePair, $targetFileScoresTable);
     print join("\t", @$features)."\n";
 #    printf("%20.12f", $features->[0]);
