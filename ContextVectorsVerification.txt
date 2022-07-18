@@ -1,0 +1,436 @@
+# Context Vectors Code Verification
+
+## Test Text File For Verification
+a a a b b c c c 
+
+## Console Output
+
+Hash Word Rank (word ranking is what order words are encountered)
+$VAR1 = {
+          'b' => 1,
+          'c' => 2,
+          'a' => 0
+        };
+        
+Hash Token Ranking (token ranking is words ranked according to freq.)
+$VAR1 = {
+          'a' => 2,
+          'c' => 1,
+          'b' => 3
+        };
+        
+## Stage wise updation of "after" array
+
+Stage 1: a is encountered, targetWordIndex is index obtained from HashWordRank, so first index in after will be for 'a'.
+contextWordIndex of the token, 1 position after the word in question, which is 'a' is 2 (form hashtokenRanking), subtract 1 from it to insert in array. (array starts from 0).
+so index 1 is incremented.
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              1,
+              0
+            ]
+          ]
+        ];
+        
+Stage 2: at position 2 after word in question, 'a' is encountered, a new array is created for the new position (2). and a's index(1) is incremented. 
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              0,
+              1,
+              1
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              1
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        ];
+$VAR1 = [
+          [
+            undef,
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ],
+          [
+            undef,
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        ];
