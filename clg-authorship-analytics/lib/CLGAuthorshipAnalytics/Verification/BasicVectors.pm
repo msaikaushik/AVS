@@ -1,4 +1,4 @@
-package CLGAuthorshipAnalytics::Verification::Basic;
+package CLGAuthorshipAnalytics::Verification::BasicVectors;
 
 #twdoc
 #
@@ -15,11 +15,13 @@ use strict;
 use warnings;
 use Carp;
 use Log::Log4perl;
+use Data::Dumper;
 use CLGTextTools::Stats qw/pickInList pickNSloppy aggregateVector/;
 use CLGTextTools::Commons qw/assignDefaultAndWarnIfUndef/;
 use CLGAuthorshipAnalytics::Verification::VerifStrategy;
 use CLGTextTools::Logging qw/confessLog cluckLog/;
 use CLGTextTools::SimMeasures::Measure qw/createSimMeasureFromId/;
+
 our @ISA=qw/CLGAuthorshipAnalytics::Verification::VerifStrategy/;
 
 use base 'Exporter';
@@ -64,6 +66,8 @@ sub compute {
     my $self = shift;
     my $probeDocsLists = shift;
 
+
+
     my @features;
     $self->{logger}->debug("Basic strategy: computing features between pair of sets of docs") if ($self->{logger});
     confessLog($self->{logger}, "Cannot process case: no obs types at all") if ((scalar(@{$self->{obsTypesList}})==0) && $self->{logger});
@@ -71,13 +75,35 @@ sub compute {
         $self->{logger}->debug("computing similarity for obs type '$obsType'") if ($self->{logger});
         my $simValue;
         if ($self->{multipleProbeAggregate} eq "random") {
+            $self->{logger}->debug("random mode: picking a pair of docs") if ($self->{logger});
             my @probeDocPair = map { pickInList($_) } @$probeDocsLists;
-            $simValue = $self->{simMeasure}->normalizeCompute($probeDocPair[0], $probeDocPair[1], $obsType);
+            
+                my $content1 = $probeDocPair[0]->getObservations($obsType);
+                my $content2 = $probeDocPair[1]->getObservations($obsType);
+
+                my $res = $self->{simMeasure}->directCompute($content1, $content2, $obsType);
+
+                # DEBUG
+                my ($aword,$avalue) = each(%$content1);
+                $self->{logger}->trace("basicVectors.compute: showing just the first value for obs '$aword': ".Dumper($avalue))  if ($self->{logger});
+                # my $simValue = 8; # dummy result
+                
+            
         } else {
             my @values;
+            $self->{logger}->debug("iterating all the pairs of docs") if ($self->{logger});
             foreach my $doc1 (@{$probeDocsLists->[0]}) {
                 foreach my $doc2 (@{$probeDocsLists->[1]}) {
-                    my $res = $self->{simMeasure}->normalizeCompute($doc1, $doc2, $obsType);
+                    my $content1 = $doc1->getObservations($obsType);
+                    my $content2 = $doc2->getObservations($obsType);
+
+                    my $res = $self->{simMeasure}->directCompute($content1, $content2, $obsType);
+
+                    # DEBUG
+                    my ($aword,$avalue) = each(%$content1);
+                    $self->{logger}->trace("basicVectors.compute: showing just the first value for obs '$aword': ".Dumper($avalue))  if ($self->{logger});
+                    # my $res = 8; # dummy result
+                    
                     push(@values, $res);
                 }
             }

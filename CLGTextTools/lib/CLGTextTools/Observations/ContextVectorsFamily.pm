@@ -64,7 +64,6 @@ sub getObservations {
 
     # print Dumper \$self->{contextVectors};
 
-    # TODO: dont sent arguments, take from $self object.
     return $self->{contextVectors};    
 }
 

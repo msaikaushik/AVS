@@ -86,6 +86,16 @@ sub normalizeCompute {
     $self->compute($normalizedDoc1, $normalizedDoc2);
 }
 
+#twdoc normalizeCompute($self, $doc1, $doc2, $obsTypeOrsize1, $size2)
+# 
+# gets the context vectors from BasicVectors and calls the compute function on CosineCV
+# 
+#/twdoc 
+sub directCompute {
+    my ($self, $doc1, $doc2, $obsType) = @_;
+
+    $self->compute($doc1, $doc2);
+}
 
 
 #twdoc createSimMeasureFromId($measureId, $params, ?$removeMeasureIdPrefix)

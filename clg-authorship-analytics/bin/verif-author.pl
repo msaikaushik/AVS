@@ -230,7 +230,10 @@ foreach my $pair (@docsPairs) { # for each case to analyze
 	# print Dumper \$doc1;
 
     my $features = $strategy->compute(\@casePair, $targetFileScoresTable);
+	
     print join("\t", @$features)."\n";
+
+
 #    printf("%20.12f", $features->[0]);
 #    for (my $i=1; $i<scalar(@$features); $i++) {
 #	printf("\t%20.12f", $features->[$i]);

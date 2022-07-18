@@ -21,6 +21,7 @@ use CLGTextTools::Commons qw/readParamGroupAsHashFromConfig/;
 use CLGAuthorshipAnalytics::Verification::Basic;
 use CLGAuthorshipAnalytics::Verification::Universum;
 use CLGAuthorshipAnalytics::Verification::Impostors;
+use CLGAuthorshipAnalytics::Verification::BasicVectors;
 
 use base 'Exporter';
 our @EXPORT_OK = qw/newVerifStrategyFromId/;
@@ -93,6 +94,8 @@ sub newVerifStrategyFromId {
     }
     if ($strategyId eq "basic") {
 	$res = CLGAuthorshipAnalytics::Verification::Basic->new($strategyParams);
+    } elsif ($strategyId eq "basicVectors") {
+        $res = CLGAuthorshipAnalytics::Verification::BasicVectors->new($strategyParams);
     } elsif ($strategyId eq "univ") {
 	$res = CLGAuthorshipAnalytics::Verification::Universum->new($strategyParams);
     } elsif ($strategyId eq "GI") {

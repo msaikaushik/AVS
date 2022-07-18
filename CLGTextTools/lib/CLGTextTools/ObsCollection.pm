@@ -132,8 +132,8 @@ sub addFinalizedObsType {
     $self->{logger}->debug("adding ".scalar(keys %$observs)." observations to finalized obs type '$obsType'") if ($self->{logger});
     my ($obs, $freq);
     while (($obs, $freq) = each %$observs) {
-	$self->{finalizedData}->{$obsType}->{$obs} += $freq;
-	$self->{nbNGramsTotal}->{$obsType} += $freq;
+		$self->{finalizedData}->{$obsType}->{$obs} += $freq;
+		$self->{nbNGramsTotal}->{$obsType} += $freq;
     }
 }
 
