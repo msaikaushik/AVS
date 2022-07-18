@@ -6,6 +6,7 @@ use File::Slurp;
 use CLGTextTools::Observations::ObsFamily;
 use Data::Dumper qw(Dumper);
 use CLGTextTools::Logging qw/confessLog cluckLog/;
+use Scalar::Util qw(looks_like_number);
 
 our $gramSeparator = " ";
 
@@ -285,12 +286,14 @@ sub createAfterArray {
     my %hashTokenRanking = %{$_[4]};
     my %hashRankingToken = %{$_[5]};
 
+    # print Dumper \%hashWordRank;
     # print Dumper \%hashTokenRanking;
 
     my $text = join('', @sentences);
     # regex to filter out punctuation characters and numerals.
     $text =~ s/[^a-zA-Z ]+//g;
     my @wordsInText = split(' ', $text);
+    my $nbWords = @wordsInText;
 
     my @after = ();
     my @before = ();
@@ -306,7 +309,7 @@ sub createAfterArray {
         # position of context word (1 to n) for nGram.
         for my $position (1 .. $n) {
             # check if position + word index is within last index of text array.
-            if ($i + $position < $#wordsInText) {
+            if ($i + $position < $#wordsInText or defined($wordsInText[$i + $position])) {
                 my $contextWord = $wordsInText[$i + $position];
                 my $contextWordIndex = $hashTokenRanking{$contextWord};
                 # print("word ", $contextWord);
@@ -315,30 +318,31 @@ sub createAfterArray {
                 if ( !defined($after[$targetWordIndex][$position]) ) {
                     # create a new array to replace the undef value.
                     my @relFreqAtPositionJ = (0) x $numberOfTokens;
-                    $relFreqAtPositionJ[$contextWordIndex]++;
+                    $relFreqAtPositionJ[$contextWordIndex - 1]++;
                     $after[$targetWordIndex][$position] = \@relFreqAtPositionJ;
                 } else {
                     my $relFreqAtPositionJRef = $after[$targetWordIndex][$position];
                     # TODO check this
-                    @{$relFreqAtPositionJRef}[$contextWordIndex]++;
+                    @{$relFreqAtPositionJRef}[$contextWordIndex - 1]++;
                     $after[$targetWordIndex][$position] = \@{$relFreqAtPositionJRef};
                 }
             }
 
+
             # for before
-            if ($i - $position >= 0) {
+            if ($i - $position >= 0 or defined($wordsInText[$i - $position])) {
                 my $contextWord = $wordsInText[$i - $position];
                 my $contextWordIndex = $hashWordRank{$contextWord};
 
                 if ( !defined($before[$targetWordIndex][$position]) ) {
                     # create a new array to replace the undef value.
                     my @relFreqAtPositionJ = (0) x $numberOfTokens;
-                    $relFreqAtPositionJ[$contextWordIndex]++;
+                    $relFreqAtPositionJ[$contextWordIndex - 1]++;
                     $before[$targetWordIndex][$position] = \@relFreqAtPositionJ;
                 } else {
                     my $relFreqAtPositionJRef = $before[$targetWordIndex][$position];
                     # TODO check this
-                    @{$relFreqAtPositionJRef}[$contextWordIndex]++;
+                    @{$relFreqAtPositionJRef}[$contextWordIndex - 1]++;
                     $before[$targetWordIndex][$position] = \@{$relFreqAtPositionJRef};
                 }
             }
@@ -347,6 +351,7 @@ sub createAfterArray {
 
     # print Dumper \@after;
     # print Dumper \@before;
+
     my %contextVectorHash;
 
     for (my $token = 0; $token < $numberOfTokens; $token++) {
@@ -375,6 +380,7 @@ sub createAfterArray {
             $index++;
         }
     
+        # print("token ", $tokenValue);
         # print Dumper \$cv[$token];
 
 
@@ -393,31 +399,34 @@ sub createAfterArray {
             }
         }
 
+        # @cv = normalizeVector(\@cvForToken, \$numberOfTokens);
         # print Dumper \@cvForToken;
 
         $contextVectorHash{$tokenValue} = \@cvForToken; # was token
         @cv = ();
     }
 
+    # HARDCODE: number of tokens in hash
+    # NOTICE: if changing the key, change it everywhere else in exclusions.
+    $contextVectorHash{"nbWords"} = \$nbWords;
+    $contextVectorHash{"hashTokenRanking"} = \%hashTokenRanking;
+    $contextVectorHash{"hashRankingToken"} = \%hashRankingToken;
+
     return %contextVectorHash;
 }
 
-sub calculateSimilarity {
-    my @cv1 = @{$_[0]};
-    my @cv2 = @{$_[1]};
-    my $n = $_[2];
+sub normalizeVector {
+    my @cv = @{$_[0]};
+    my $nbTokens = $_[1];
 
-    # x*y/|x|*|y|
-    my $numerator = 0;
-    my $denominator = 0;
-    my $xSumOfSquares = 0;
-    my $ySumOfSquares = 0;
-
-    for (my $i = 0; $i < $#cv1; $i++) {
-        $numerator += ($cv1[$i] * $cv2[$i]);
-        $xSumOfSquares += $cv1[$i] ** 2;
-        $ySumOfSquares += $cv2[$i] ** 2;
+    foreach my $val (@cv) {
+        $val = $val / ${$nbTokens};
+        # print(looks_like_number($val));
     }
-    my $similarity = 0;
-    $similarity = $numerator / (sqrt($xSumOfSquares) * sqrt($ySumOfSquares));
+
+    # print(${$nbTokens});
+    # print Dumper \@cv;
+    
+    return @cv;
 }
+
